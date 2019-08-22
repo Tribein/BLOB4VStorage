@@ -6,8 +6,6 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Map;
-import java.util.TreeMap;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,45 +16,66 @@ import javax.servlet.http.HttpServletResponse;
 public class RequestProcessor
   extends HttpServlet
 {
-  private static final String QUERY = "select name,size_in_bytes,body from sm_meta.t_file_body where body is not null and rownum=1";
+  private static final String QUERY = "select name,body from sm_meta.t_file_body where body is not null and id_file_body = ? ";
   
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException
   {
-    Map<String, String[]> parametersMap = new TreeMap();
     
-    parametersMap = request.getParameterMap();
+    long imageId;
+    Connection con;
     
-    response.setContentType("image/jpg");
+    if ( request.getParameter("id") == null){
+        return;
+    }else{
+        imageId = Long.parseLong(request.getParameter(("id")));
+    }
+    
+    
+    
+    try{
+        con = OraDS.getConnection();
+    }catch(Exception e){
+        response.sendError(503,"Could not aquire database connection!");
+        return;
+    }
     try
     {
-      Connection con = OraDS.getConnection();
       PreparedStatement stmt = con.prepareStatement(QUERY);
+      stmt.setLong(1, imageId);
       ResultSet rs = stmt.executeQuery();
       if (rs.next())
       {
+        response.setContentType("image/jpg");
         response.setHeader("Content-disposition", "attachment; filename=" + rs.getString(1));
-        OutputStream out = response.getOutputStream();
-        InputStream in = rs.getBlob(3).getBinaryStream();
+        //response.setContentLength(rs.getInt(2));
         
-        response.setContentLength(rs.getInt(2));
+        OutputStream out = response.getOutputStream();
+        InputStream in = rs.getBlob(2).getBinaryStream();        
         byte[] buffer = new byte[4096];
-        int length;
-        while ((length = in.read(buffer)) > 0) {
-          out.write(buffer, 0, length);
+        int length;        
+        try{
+            while ((length = in.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+                out.flush();
+            }
+        }catch(Exception e){
+          System.out.println(e.getMessage());
         }
         in.close();
-        out.flush();
+        rs.close();
+        //out.flush();
         out.close();
+      }else{
+          response.sendError(404);
       }
-      rs.close();
       stmt.close();
       con.close();
     }
     catch (Exception e)
     {
       e.printStackTrace();
-      response.sendError(503);
+      response.sendError(503, e.getMessage());
     }
   }
   
