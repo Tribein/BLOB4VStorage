@@ -28,11 +28,11 @@ public final class OraDS
     props.setProperty(OracleConnection.CONNECTION_PROPERTY_THIN_READ_TIMEOUT, "60000");
     props.setProperty(OracleConnection.CONNECTION_PROPERTY_AUTOCOMMIT, "false");
     cpds.setJdbcUrl(BLOB4VStorage.dbSTR);
-    cpds.setMinPoolSize(10);
-    cpds.setAcquireIncrement(10);
-    cpds.setMaxPoolSize(5120);
-    cpds.setMaxIdleTime(120);
-    cpds.setNumHelperThreads(8);
+    cpds.setMinPoolSize(16);
+    cpds.setAcquireIncrement(8);
+    cpds.setMaxPoolSize(256);
+    cpds.setMaxIdleTime(60);
+    cpds.setNumHelperThreads(16);
     cpds.setForceSynchronousCheckins(true);
     cpds.setProperties(props);
   }
