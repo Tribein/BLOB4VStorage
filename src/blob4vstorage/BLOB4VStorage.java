@@ -17,10 +17,10 @@ public class BLOB4VStorage
   public static void main(String[] args)
     throws Exception
   {
-    int port = Integer.parseInt(args[1]);
-    dbUSN = args[2];
-    dbPWD = args[3];
-    dbSTR = args[4];
+    int port = Integer.parseInt(args[0]);
+    dbUSN = args[1];
+    dbPWD = args[2];
+    dbSTR = args[3];
     Connection initialConnection = OraDS.getConnection();
     initialConnection.close();
     
