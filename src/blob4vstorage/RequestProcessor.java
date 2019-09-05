@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 public class RequestProcessor
   extends HttpServlet
 {
-  private static final String QUERY = "select name,body from sm_meta.t_file_body where body is not null and id_file_body = ? ";
+  private static final String QUERY = "select name,body from v_file_body where body is not null and id_file_body= ? ";
   
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException
