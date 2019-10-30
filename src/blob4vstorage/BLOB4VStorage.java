@@ -50,6 +50,7 @@ public class BLOB4VStorage
         
     ServletHandler handler = new ServletHandler();
     server.setHandler(handler);
+    handler.addServletWithMapping(Status.class, "/status");
     handler.addServletWithMapping(RequestProcessor.class, "/*");
     server.start();
     
